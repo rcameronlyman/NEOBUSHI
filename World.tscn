@@ -1,0 +1,156 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://World.gd" type="Script" id=2]
+[ext_resource path="res://Health.png" type="Texture" id=3]
+[ext_resource path="res://EnemySpawner.gd" type="Script" id=4]
+[ext_resource path="res://PauseMenu.tscn" type="PackedScene" id=5]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 5000, 50 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 5000, 50 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 50, 5000 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 50, 5000 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.160784, 0.105882, 0.784314, 1 )
+
+[node name="World" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_left = -4949.0
+margin_top = -4966.0
+margin_right = 5051.0
+margin_bottom = 5034.0
+color = Color( 0.34902, 0.321569, 0.321569, 1 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 458, 211 )
+
+[node name="Wall" type="StaticBody2D" parent="."]
+position = Vector2( 0, -5000 )
+
+[node name="WallCollision" type="CollisionShape2D" parent="Wall"]
+position = Vector2( 12, 44 )
+shape = SubResource( 1 )
+
+[node name="Wall2" type="StaticBody2D" parent="."]
+position = Vector2( 0, 5000 )
+
+[node name="WallCollision" type="CollisionShape2D" parent="Wall2"]
+position = Vector2( -15, 22 )
+shape = SubResource( 2 )
+
+[node name="Wall_Left" type="StaticBody2D" parent="."]
+position = Vector2( -5000, 0 )
+
+[node name="WallCollision" type="CollisionShape2D" parent="Wall_Left"]
+position = Vector2( 22, -16 )
+shape = SubResource( 3 )
+
+[node name="Wall_Right" type="StaticBody2D" parent="."]
+position = Vector2( 5000, 0 )
+
+[node name="WallCollision" type="CollisionShape2D" parent="Wall_Right"]
+position = Vector2( 29, 48 )
+shape = SubResource( 4 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 900.0
+one_shot = true
+autostart = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+margin_left = 498.0
+margin_top = 20.0
+margin_right = 538.0
+margin_bottom = 51.0
+text = "60
+"
+align = 1
+
+[node name="VictoryUI" type="CanvasLayer" parent="CanvasLayer"]
+pause_mode = 2
+visible = false
+
+[node name="VictoryOverlay" type="ColorRect" parent="CanvasLayer/VictoryUI"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.215686, 0.196078, 0.196078, 0.564706 )
+
+[node name="VictoryMessage" type="Label" parent="CanvasLayer/VictoryUI/VictoryOverlay"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -69.5
+margin_top = -7.0
+margin_right = 69.5
+margin_bottom = 7.0
+text = "LEVEL ONE COMPLETE"
+
+[node name="NextLevelButton" type="Button" parent="CanvasLayer/VictoryUI/VictoryOverlay"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -60.0
+margin_top = 20.0
+margin_right = 60.0
+margin_bottom = 60.0
+text = "NEXT LEVEL"
+
+[node name="EnemySpawner" type="Node2D" parent="."]
+script = ExtResource( 4 )
+
+[node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
+wait_time = 2.0
+autostart = true
+
+[node name="XpHud" type="CanvasLayer" parent="."]
+scale = Vector2( 5, 5 )
+transform = Transform2D( 5, 0, 0, 5, 0, 0 )
+
+[node name="ExperienceBar" type="ProgressBar" parent="XpHud"]
+margin_left = 3.2
+margin_top = 3.8
+margin_right = 30.2
+margin_bottom = 17.8
+custom_styles/fg = SubResource( 5 )
+max_value = 10.0
+
+[node name="LevelLabel" type="Label" parent="XpHud"]
+margin_left = 154.0
+margin_top = 3.4
+margin_right = 187.0
+margin_bottom = 17.4
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HealthBar" type="TextureProgress" parent="UI"]
+margin_left = 18.0
+margin_top = 170.0
+margin_right = 1042.0
+margin_bottom = 1194.0
+rect_scale = Vector2( 0.121717, -0.0817723 )
+value = 100.0
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 3 )
+tint_under = Color( 0.0862745, 0.0784314, 0.0784314, 1 )
+tint_progress = Color( 1, 0, 0, 1 )
+
+[node name="PauseMenu" parent="UI" instance=ExtResource( 5 )]
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="CanvasLayer/VictoryUI/VictoryOverlay/NextLevelButton" to="." method="_on_NextLevelButton_pressed"]
+[connection signal="timeout" from="EnemySpawner/SpawnTimer" to="EnemySpawner" method="_on_SpawnTimer_timeout"]
