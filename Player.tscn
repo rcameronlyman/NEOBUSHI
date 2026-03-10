@@ -153,6 +153,7 @@ shape = SubResource( 3 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
+zoom = Vector2( 2, 2 )
 
 [node name="GemCollector" type="Area2D" parent="."]
 
@@ -161,7 +162,7 @@ shape = SubResource( 26 )
 
 [node name="Minigun" type="Sprite" parent="."]
 modulate = Color( 0.207843, 0.219608, 0.168627, 1 )
-position = Vector2( -31, -69 )
+position = Vector2( 0, -69 )
 scale = Vector2( 0.08, 0.08 )
 texture = ExtResource( 3 )
 offset = Vector2( 500, 0 )

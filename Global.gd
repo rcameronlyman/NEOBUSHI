@@ -2,6 +2,7 @@ extends Node
 
 # --- RUN DATA ---
 var gems_collected = 0
+var total_bullets_hit = 0
 
 # --- PERMANENT BANK ---
 var total_meta_xp = 0.0
@@ -14,7 +15,8 @@ var upgrade_levels = {
 	"move_speed": 0,
 	"fire_rate": 0,
 	"damage": 0,
-	"pickup_range": 0
+	"pickup_range": 0,
+	"mega_shell": 0,
 }
 
 func _ready():

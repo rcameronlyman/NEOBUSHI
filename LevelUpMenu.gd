@@ -67,8 +67,13 @@ func apply_upgrade(index):
 	var player = get_tree().current_scene.find_node("Player", true, false)
 	
 	if player:
+		# 1. Update the Player's local variable for the UI/Visuals
 		var current_lvl = player.get(upgrade["var"])
 		player.set(upgrade["var"], current_lvl + 1)
+		
+		# 2. Specifically update Global for Mega Shell so Bullets see it
+		if upgrade["name"] == "Mega Shell":
+			Global.upgrade_levels["mega_shell"] = current_lvl + 1
 	
 	resume_game()
 

@@ -16,5 +16,8 @@ func _on_NextLevelButton_pressed():
 	# 1. Unpause the game so we can interact again
 	get_tree().paused = false
 	
-	# 2. Reload the scene to restart the game
+	# 2. Reset the Mega Shell counter so the next run starts fresh
+	Global.total_bullets_hit = 0
+	
+	# 3. Reload the scene to restart the game
 	get_tree().reload_current_scene()

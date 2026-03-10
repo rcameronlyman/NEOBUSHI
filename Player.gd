@@ -18,7 +18,7 @@ var run_fire_rate_lvl = 0
 var run_pierce_lvl = 0
 var run_bounce_lvl = 0
 var run_split_shot_lvl = 0
-var run_exploding_lvl = 0
+var run_exploding_lvl = 1
 var run_mega_shell_lvl = 0
 var run_attract_shell_lvl = 0
 
@@ -32,7 +32,6 @@ var has_piercing = false
 var velocity = Vector2.ZERO
 var can_take_damage = true
 var bullet_scene = preload("res://Bullet.tscn")
-var shots_fired_count = 0
 
 # --- XP & LEVELING ---
 var experience = 0.0        
@@ -107,7 +106,6 @@ func shoot():
 	if not target:
 		return
 
-	shots_fired_count += 1
 	var bullet_count = 1
 	var spread_angle = 0.18
 
@@ -127,24 +125,15 @@ func shoot():
 		bullet.global_position = $Minigun/MuzzleFlash.global_position
 		var offset = (i - (bullet_count - 1) / 2.0) * spread_angle
 		bullet.direction = base_dir.rotated(offset).normalized()
+		
+		# Bullet.gd now handles the Mega Shell check using Global.upgrade_levels
 		bullet.pierce_count = run_pierce_lvl
 		bullet.bounce_count = run_bounce_lvl
-		if run_exploding_lvl > 0:
-			bullet.can_explode = true
+		
 		if run_split_shot_lvl == 3:
 			bullet.damage *= 1.2
 
 	flash_muzzle()
-	check_special_shells()
-
-func check_special_shells():
-	var mega_threshold = 25
-	if run_mega_shell_lvl == 1: mega_threshold = 20
-	if run_mega_shell_lvl == 2: mega_threshold = 15
-	if run_mega_shell_lvl == 3: mega_threshold = 10
-	
-	if shots_fired_count % mega_threshold == 0 and run_mega_shell_lvl > 0:
-		print("Firing Mega Shell")
 
 func flash_muzzle():
 	$Minigun/MuzzleFlash.show()
