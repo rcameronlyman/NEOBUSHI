@@ -101,6 +101,12 @@ func apply_passive_healing(delta):
 		health = min(health, max_health)
 		update_ui()
 
+func heal(amount):
+	health += amount
+	if health > max_health:
+		health = max_health
+	update_ui()
+
 func shoot():
 	var target = get_closest_enemy()
 	if not target:

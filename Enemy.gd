@@ -3,6 +3,7 @@ extends Area2D
 var speed = 150
 var health = 3 
 var gem_scene = preload("res://Gem.tscn")
+var health_drop_scene = preload("res://HealthDrop.tscn")
 var death_effect_scene = preload("res://DeathEffect.gd") 
 var knockback = Vector2.ZERO
 
@@ -40,10 +41,17 @@ func die():
 	get_tree().current_scene.add_child(effect)
 	effect.global_position = global_position
 	
-	# Instance the XP gem
-	var gem = gem_scene.instance()
-	get_tree().current_scene.add_child(gem)
-	gem.global_position = global_position
+	# --- LOOT TABLE LOGIC ---
+	var roll = randf() # Generates a number between 0.0 and 1.0
+	
+	if roll < 0.10: # 10% chance for Health
+		var health_drop = health_drop_scene.instance()
+		get_tree().current_scene.add_child(health_drop)
+		health_drop.global_position = global_position
+	else: # 90% chance for Gem
+		var gem = gem_scene.instance()
+		get_tree().current_scene.add_child(gem)
+		gem.global_position = global_position
 	
 	# Remove the enemy from the scene
 	queue_free()

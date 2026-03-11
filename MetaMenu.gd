@@ -18,4 +18,4 @@ func _on_SpeedButton_pressed():
 		update_ui()
 
 func _on_BackButton_pressed():
-	get_tree().change_scene("res://Main.tscn")
+	get_tree().change_scene("res://MainMenu.tscn")

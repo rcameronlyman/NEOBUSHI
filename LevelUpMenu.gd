@@ -71,9 +71,12 @@ func apply_upgrade(index):
 		var current_lvl = player.get(upgrade["var"])
 		player.set(upgrade["var"], current_lvl + 1)
 		
-		# 2. Specifically update Global for Mega Shell so Bullets see it
+		# 2. Update Global dictionary so Bullets can see the new levels
 		if upgrade["name"] == "Mega Shell":
 			Global.upgrade_levels["mega_shell"] = current_lvl + 1
+		
+		if upgrade["name"] == "Exploding":
+			Global.upgrade_levels["exploding"] = current_lvl + 1
 	
 	resume_game()
 
@@ -82,3 +85,11 @@ func resume_game():
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	get_tree().paused = false
 	queue_free()
+
+func _on_HangarButton_pressed():
+	# Reset the run-specific gems 
+	Global.gems_collected = 0
+	# Unpause the tree so the next scene isn't frozen
+	get_tree().paused = false 
+	# Corrected path to match your FileSystem 
+	get_tree().change_scene("res://MainMenu.tscn")
