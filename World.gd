@@ -1,38 +1,42 @@
 extends Node2D
 
-func _process(delta):
-	# Update the countdown label with formatted time (e.g., 1m34s)
-	$CanvasLayer/Label.text = format_time($Timer.time_left)
+func _ready():
+	# Ensure the mouse is hidden for gameplay immersion
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	
+	# Center the massive Ground canvas at 0,0
+	if has_node("Ground"):
+		$Ground.position = Vector2.ZERO
+		$Ground.centered = true
+		print("Lunar Surface Initialized: 10,000 x 10,000 canvas centered at 0,0.")
 
-# Helper function to convert seconds into a m:ss format
+func _process(delta):
+	# Update the countdown label
+	if has_node("CanvasLayer/Label"):
+		$CanvasLayer/Label.text = format_time($Timer.time_left)
+
+# Helper function for m:ss format
 func format_time(seconds):
 	var m = int(seconds) / 60
 	var s = int(seconds) % 60
-	# pad_zeros(2) ensures 1 minute 5 seconds looks like 1m05s
 	return str(m) + "m" + str(s).pad_zeros(2) + "s"
 
 func _on_Timer_timeout():
-	# Victory: Player survived until the end
+	# Victory: Survived the full duration
 	Global.last_round_win = true
-	
-	# Bank the gems before leaving the scene
+	Global.run_completed = true
 	Global.add_meta_xp(Global.gems_collected)
-	
-	# Transition to the Summary Screen
 	get_tree().change_scene("res://SummaryScreen.tscn")
 
 func game_over():
-	# Defeat: Called from Player.gd when health <= 0
+	# Defeat: Player died
 	Global.last_round_win = false
-	
-	# Still bank the gems collected before death
+	Global.run_completed = false
 	Global.add_meta_xp(Global.gems_collected)
-	
-	# Transition to the Summary Screen
 	get_tree().change_scene("res://SummaryScreen.tscn")
 
 func _on_NextLevelButton_pressed():
-	# Standard cleanup for moving between menus
+	# Cleanup for scene transitions
 	get_tree().paused = false
 	Global.total_bullets_hit = 0
 	Global.gems_collected = 0

@@ -19,10 +19,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -20.0
-margin_right = 20.0
-margin_bottom = 20.0
+margin_left = -72.0
+margin_top = -37.0
+margin_right = 72.0
+margin_bottom = 37.0
+alignment = 1
 
 [node name="ResultLabel" type="Label" parent="VBoxContainer"]
 margin_right = 144.0
@@ -34,12 +35,14 @@ margin_top = 18.0
 margin_right = 144.0
 margin_bottom = 32.0
 text = "GEMS COLLECTED: 0"
+align = 1
 
 [node name="MetaXPLabel" type="Label" parent="VBoxContainer"]
 margin_top = 36.0
 margin_right = 144.0
 margin_bottom = 50.0
 text = "META XP EARNED: 0"
+align = 1
 
 [node name="HangarButton" type="Button" parent="VBoxContainer"]
 margin_top = 54.0

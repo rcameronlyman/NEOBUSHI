@@ -27,3 +27,25 @@ func toggle_pause():
 
 func _on_ResumeButton_pressed():
 	toggle_pause()
+
+func _on_EndRunButton_pressed():
+	get_tree().paused = false
+	# Tell Global that we chose to end this run manually
+	Global.run_ended_early = true
+	# Bank the XP
+	Global.add_meta_xp(Global.gems_collected)
+	# Direct path to your root file
+	get_tree().change_scene("res://SummaryScreen.tscn")
+
+func _on_RestartButton_button_up():
+	get_tree().paused = false
+	# Reset gems and reload current scene
+	Global.gems_collected = 0
+	get_tree().reload_current_scene()
+
+func _on_QuitButton_pressed():
+	get_tree().paused = false
+	# Reset gems and return to Main Menu
+	Global.gems_collected = 0
+	# Direct path to your root file
+	get_tree().change_scene("res://MainMenu.tscn")
