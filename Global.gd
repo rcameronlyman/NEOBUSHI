@@ -3,6 +3,7 @@ extends Node
 # --- RUN DATA ---
 var gems_collected = 0
 var total_bullets_hit = 0
+var last_round_win = false # Tracks if the player won or lost the last run
 
 # --- PERMANENT BANK ---
 var total_meta_xp = 0.0
@@ -21,6 +22,7 @@ var upgrade_levels = {
 
 func _ready():
 	load_game()
+	total_meta_xp = 5000.0 # TEMP: Force XP for testing
 
 func save_game():
 	var file = File.new()
@@ -41,7 +43,12 @@ func load_game():
 		if error == OK:
 			var data = file.get_var()
 			total_meta_xp = data.get("total_meta_xp", 0.0)
-			upgrade_levels = data.get("upgrade_levels", upgrade_levels)
+			
+			var loaded_upgrades = data.get("upgrade_levels", {})
+			for stat in upgrade_levels.keys():
+				if loaded_upgrades.has(stat):
+					upgrade_levels[stat] = loaded_upgrades[stat]
+			
 			file.close()
 			print("Game Loaded. Total Meta XP: ", total_meta_xp)
 
@@ -52,11 +59,27 @@ func add_meta_xp(gems):
 	save_game()
 
 # --- MECHANICAL SPENDING LOGIC ---
-func attempt_purchase(stat_name, cost):
-	if total_meta_xp >= cost:
+func attempt_purchase(stat_name, cost, max_level):
+	# Now uses the max_level passed from the button press
+	if total_meta_xp >= cost and upgrade_levels[stat_name] < max_level:
 		total_meta_xp -= cost
 		upgrade_levels[stat_name] += 1
 		save_game()
 		return true # Purchase successful
 	else:
-		return false # Not enough XP
+		return false # Not enough XP or already at Max Level
+
+# --- TESTING TOOLS ---
+func reset_game_data():
+	var dir = Directory.new()
+	if dir.file_exists(save_path):
+		dir.remove(save_path)
+		print("Save file deleted.")
+	
+	# Reset live variables to default values
+	total_meta_xp = 0.0
+	for stat in upgrade_levels.keys():
+		upgrade_levels[stat] = 0
+	
+	# Reload current scene to refresh the UI immediately
+	get_tree().reload_current_scene()

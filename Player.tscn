@@ -118,7 +118,6 @@ radius = 78.1025
 radius = 271.007
 
 [sub_resource type="CircleShape2D" id=26]
-radius = 62.6259
 
 [node name="Player" type="KinematicBody2D"]
 script = ExtResource( 2 )

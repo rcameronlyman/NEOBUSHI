@@ -1,17 +1,22 @@
 extends Control
 
 func _ready():
-	# Update the labels using the exact variable names from Global.gd
+	# 1. Force the mouse cursor to show up
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	# 2. Set the Win/Loss Message based on the Global state
+	if Global.last_round_win:
+		$VBoxContainer/ResultLabel.text = "VICTORY"
+		$VBoxContainer/ResultLabel.modulate = Color(0, 1, 0) # Green for win
+	else:
+		$VBoxContainer/ResultLabel.text = "DEFEAT"
+		$VBoxContainer/ResultLabel.modulate = Color(1, 0, 0) # Red for loss
+	
+	# 3. Update labels with run results
 	$VBoxContainer/GemsLabel.text = "GEMS COLLECTED: " + str(Global.gems_collected)
 	$VBoxContainer/MetaXPLabel.text = "TOTAL META XP: " + str(Global.total_meta_xp)
 
 func _on_HangarButton_pressed():
-	# Reset the run-specific gems so the next run starts at 0
 	Global.gems_collected = 0
-	
-	# CRITICAL: Unpause the tree so the Main Menu can actually run
 	get_tree().paused = false 
-	
-	# This takes you back to your Main Menu (The Hangar)
-	# Updated from 'Main.tscn' to 'MainMenu.tscn' to match your file system
 	get_tree().change_scene("res://MainMenu.tscn")

@@ -24,21 +24,27 @@ margin_top = -20.0
 margin_right = 20.0
 margin_bottom = 20.0
 
-[node name="GemsLabel" type="Label" parent="VBoxContainer"]
+[node name="ResultLabel" type="Label" parent="VBoxContainer"]
 margin_right = 144.0
 margin_bottom = 14.0
-text = "GEMS COLLECTED: 0"
+align = 1
 
-[node name="MetaXPLabel" type="Label" parent="VBoxContainer"]
+[node name="GemsLabel" type="Label" parent="VBoxContainer"]
 margin_top = 18.0
 margin_right = 144.0
 margin_bottom = 32.0
+text = "GEMS COLLECTED: 0"
+
+[node name="MetaXPLabel" type="Label" parent="VBoxContainer"]
+margin_top = 36.0
+margin_right = 144.0
+margin_bottom = 50.0
 text = "META XP EARNED: 0"
 
 [node name="HangarButton" type="Button" parent="VBoxContainer"]
-margin_top = 36.0
+margin_top = 54.0
 margin_right = 144.0
-margin_bottom = 56.0
+margin_bottom = 74.0
 text = "RETURN TO HANGAR"
 
 [connection signal="pressed" from="VBoxContainer/HangarButton" to="." method="_on_HangarButton_pressed"]

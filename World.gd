@@ -1,23 +1,39 @@
 extends Node2D
 
 func _process(delta):
-	# Update the countdown label every frame
-	# int() handles the large 900-second starting point correctly
-	$CanvasLayer/Label.text = str(int($Timer.time_left))
+	# Update the countdown label with formatted time (e.g., 1m34s)
+	$CanvasLayer/Label.text = format_time($Timer.time_left)
+
+# Helper function to convert seconds into a m:ss format
+func format_time(seconds):
+	var m = int(seconds) / 60
+	var s = int(seconds) % 60
+	# pad_zeros(2) ensures 1 minute 5 seconds looks like 1m05s
+	return str(m) + "m" + str(s).pad_zeros(2) + "s"
 
 func _on_Timer_timeout():
-	# 1. Show the victory screen from its new location in the CanvasLayer
-	$CanvasLayer/VictoryUI/VictoryOverlay.show()
+	# Victory: Player survived until the end
+	Global.last_round_win = true
 	
-	# 2. Freeze the game logic
-	get_tree().paused = true
+	# Bank the gems before leaving the scene
+	Global.add_meta_xp(Global.gems_collected)
+	
+	# Transition to the Summary Screen
+	get_tree().change_scene("res://SummaryScreen.tscn")
+
+func game_over():
+	# Defeat: Called from Player.gd when health <= 0
+	Global.last_round_win = false
+	
+	# Still bank the gems collected before death
+	Global.add_meta_xp(Global.gems_collected)
+	
+	# Transition to the Summary Screen
+	get_tree().change_scene("res://SummaryScreen.tscn")
 
 func _on_NextLevelButton_pressed():
-	# 1. Unpause the game so we can interact again
+	# Standard cleanup for moving between menus
 	get_tree().paused = false
-	
-	# 2. Reset the Mega Shell counter so the next run starts fresh
 	Global.total_bullets_hit = 0
-	
-	# 3. Reload the scene to restart the game
-	get_tree().reload_current_scene()
+	Global.gems_collected = 0
+	get_tree().change_scene("res://SummaryScreen.tscn")

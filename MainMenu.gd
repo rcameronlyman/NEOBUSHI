@@ -7,3 +7,7 @@ func _on_StartButton_pressed():
 func _on_UpgradesButton_pressed():
 	# Switches to the Meta Progression menu
 	get_tree().change_scene("res://MetaMenu.tscn")
+
+func _on_OptionsButton_pressed():
+	# Switches to the Options Menu scene for data management
+	get_tree().change_scene("res://OptionsMenu.tscn")

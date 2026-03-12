@@ -9,12 +9,18 @@ var base_spawn_time = 2.0
 var minimum_spawn_time = 0.5
 var difficulty_increase_rate = 0.05
 
+# NEW: Spawn ceiling increased 5x to 750 for high-intensity testing
+var max_enemies = 750
+
 func _ready():
 	$SpawnTimer.wait_time = base_spawn_time
 	$SpawnTimer.start()
 
 func _on_SpawnTimer_timeout():
-	spawn_enemy()
+	# Only spawn if the current count is below the new 750 ceiling
+	if get_tree().get_nodes_in_group("enemies").size() < max_enemies:
+		spawn_enemy()
+	
 	increase_difficulty()
 
 func spawn_enemy():
@@ -32,8 +38,7 @@ func spawn_enemy():
 	# 2. Instance the enemy
 	var enemy = enemy_scene.instance()
 	
-	# 3. CRITICAL FIX: Add the enemy to the WORLD root, not this spawner.
-	# This prevents the "enemies moving with the player" illusion.
+	# 3. Add to the WORLD root to prevent movement illusion
 	get_tree().current_scene.add_child(enemy)
 	
 	# 4. Set position AFTER adding to scene

@@ -12,57 +12,246 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0, 0, 0, 0.380392 )
 
-[node name="Upgrades" type="Label" parent="."]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -88.0
-margin_top = 18.0
-margin_right = 936.0
+[node name="HeaderContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+margin_top = 50.0
 margin_bottom = 32.0
+
+[node name="TitleLabel" type="Label" parent="HeaderContainer"]
+margin_right = 1024.0
+margin_bottom = 14.0
 text = "RESEARCH AND UPGRADES"
+align = 1
 
-[node name="XPDisplay" type="Label" parent="."]
+[node name="XPDisplay" type="Label" parent="HeaderContainer"]
+margin_top = 18.0
+margin_right = 1024.0
+margin_bottom = 32.0
+text = "AVAILABLE XP: 0"
+align = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -49.0
-margin_top = -246.0
-margin_right = 45.0
-margin_bottom = -232.0
-text = "Available XP: 0"
+margin_left = -6.0
+margin_top = -6.0
+margin_right = 6.0
+margin_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_min_size = Vector2( 400, 300 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -19.0
-margin_top = -19.0
-margin_right = 21.0
-margin_bottom = 71.0
-custom_constants/separation = 15
+[node name="UpgradeList" type="VBoxContainer" parent="ScrollContainer"]
+margin_right = 400.0
+margin_bottom = 164.0
+alignment = 1
 
-[node name="HealthButton" type="Button" parent="VBoxContainer"]
-margin_right = 172.0
+[node name="HealthRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_right = 400.0
 margin_bottom = 20.0
-size_flags_vertical = 3
-text = "UPGRADE HEALTH (10XP)"
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
 
-[node name="SpeedButton" type="Button" parent="VBoxContainer"]
-margin_top = 35.0
-margin_right = 172.0
-margin_bottom = 55.0
-size_flags_vertical = 3
-text = "UPGRADE SPEED (15XP)"
+[node name="HealthButton" type="Button" parent="ScrollContainer/UpgradeList/HealthRow"]
+margin_right = 139.0
+margin_bottom = 20.0
+text = "MAX HEALTH (10XP)"
 
-[node name="BackButton" type="Button" parent="VBoxContainer"]
-margin_top = 70.0
-margin_right = 172.0
-margin_bottom = 90.0
-size_flags_vertical = 3
-text = "BACK TO MAIN MENU"
+[node name="HealthLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/HealthRow"]
+margin_left = 159.0
+margin_top = 3.0
+margin_right = 199.0
+margin_bottom = 17.0
+text = "LV 0/5"
 
-[connection signal="pressed" from="VBoxContainer/HealthButton" to="." method="_on_HealthButton_pressed"]
-[connection signal="pressed" from="VBoxContainer/SpeedButton" to="." method="_on_SpeedButton_pressed"]
-[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
+[node name="HealthBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/HealthRow"]
+margin_left = 219.0
+margin_top = 3.0
+margin_right = 319.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="SpeedRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_top = 24.0
+margin_right = 400.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
+
+[node name="SpeedButton" type="Button" parent="ScrollContainer/UpgradeList/SpeedRow"]
+margin_right = 137.0
+margin_bottom = 20.0
+text = "MOVE SPEED (15XP)"
+
+[node name="SpeedLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/SpeedRow"]
+margin_left = 157.0
+margin_top = 3.0
+margin_right = 197.0
+margin_bottom = 17.0
+text = "LV 0/5"
+
+[node name="SpeedBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/SpeedRow"]
+margin_left = 217.0
+margin_top = 3.0
+margin_right = 317.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="ArmorRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_top = 48.0
+margin_right = 400.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
+
+[node name="ArmorButton" type="Button" parent="ScrollContainer/UpgradeList/ArmorRow"]
+margin_right = 104.0
+margin_bottom = 20.0
+text = "ARMOR (20XP)"
+
+[node name="ArmorLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/ArmorRow"]
+margin_left = 124.0
+margin_top = 3.0
+margin_right = 164.0
+margin_bottom = 17.0
+text = "LV 0/5"
+
+[node name="ArmorBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/ArmorRow"]
+margin_left = 184.0
+margin_top = 3.0
+margin_right = 284.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="FireRateRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_top = 72.0
+margin_right = 400.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
+
+[node name="FireRateButton" type="Button" parent="ScrollContainer/UpgradeList/FireRateRow"]
+margin_right = 118.0
+margin_bottom = 20.0
+text = "FIRE RATE (25XP)"
+
+[node name="FireRateLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/FireRateRow"]
+margin_left = 138.0
+margin_top = 3.0
+margin_right = 178.0
+margin_bottom = 17.0
+text = "LV 0/5"
+
+[node name="FireRateBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/FireRateRow"]
+margin_left = 198.0
+margin_top = 3.0
+margin_right = 298.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="DamageRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_top = 96.0
+margin_right = 400.0
+margin_bottom = 116.0
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
+
+[node name="DamageButton" type="Button" parent="ScrollContainer/UpgradeList/DamageRow"]
+margin_right = 113.0
+margin_bottom = 20.0
+text = "DAMAGE (30XP)"
+
+[node name="DamageLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/DamageRow"]
+margin_left = 133.0
+margin_top = 3.0
+margin_right = 173.0
+margin_bottom = 17.0
+text = "LV 0/5"
+
+[node name="DamageBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/DamageRow"]
+margin_left = 193.0
+margin_top = 3.0
+margin_right = 293.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="PickupRangeRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_top = 120.0
+margin_right = 400.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
+
+[node name="PickupRangeButton" type="Button" parent="ScrollContainer/UpgradeList/PickupRangeRow"]
+margin_right = 151.0
+margin_bottom = 20.0
+text = "PICKUP RANGE (15XP)"
+
+[node name="PickupRangeLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/PickupRangeRow"]
+margin_left = 171.0
+margin_top = 3.0
+margin_right = 211.0
+margin_bottom = 17.0
+text = "LV 0/5"
+
+[node name="PickupRangeBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/PickupRangeRow"]
+margin_left = 231.0
+margin_top = 3.0
+margin_right = 331.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="MegaShellRow" type="HBoxContainer" parent="ScrollContainer/UpgradeList"]
+margin_top = 144.0
+margin_right = 400.0
+margin_bottom = 164.0
+rect_min_size = Vector2( 400, 0 )
+custom_constants/separation = 20
+
+[node name="MegaShellButton" type="Button" parent="ScrollContainer/UpgradeList/MegaShellRow"]
+margin_right = 216.0
+margin_bottom = 20.0
+text = "RESEARCH: MEGA SHELL (100XP)"
+
+[node name="MegaShellLevelLabel" type="Label" parent="ScrollContainer/UpgradeList/MegaShellRow"]
+margin_left = 236.0
+margin_top = 3.0
+margin_right = 276.0
+margin_bottom = 17.0
+text = "LV 0/5"
+
+[node name="MegaShellBar" type="ProgressBar" parent="ScrollContainer/UpgradeList/MegaShellRow"]
+margin_left = 296.0
+margin_top = 3.0
+margin_right = 396.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 4
+
+[node name="Menu Button" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -64.0
+margin_top = -20.0
+margin_right = 64.0
+margin_bottom = -100.0
+text = "BACK TO HANGAR"
+
+[connection signal="pressed" from="ScrollContainer/UpgradeList/HealthRow/HealthButton" to="." method="_on_HealthButton_pressed"]
+[connection signal="pressed" from="ScrollContainer/UpgradeList/SpeedRow/SpeedButton" to="." method="_on_SpeedButton_pressed"]
+[connection signal="pressed" from="ScrollContainer/UpgradeList/ArmorRow/ArmorButton" to="." method="_on_ArmorButton_pressed"]
+[connection signal="pressed" from="ScrollContainer/UpgradeList/FireRateRow/FireRateButton" to="." method="_on_FireRateButton_pressed"]
+[connection signal="pressed" from="ScrollContainer/UpgradeList/DamageRow/DamageButton" to="." method="_on_DamageButton_pressed"]
+[connection signal="pressed" from="ScrollContainer/UpgradeList/PickupRangeRow/PickupRangeButton" to="." method="_on_PickupRangeButton_pressed"]
+[connection signal="pressed" from="ScrollContainer/UpgradeList/MegaShellRow/MegaShellButton" to="." method="_on_MegaShellButton_pressed"]
+[connection signal="pressed" from="Menu Button" to="." method="_on_Menu_Button_pressed"]

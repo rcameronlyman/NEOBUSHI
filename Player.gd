@@ -42,8 +42,6 @@ var prev_xp_req = 1
 func _ready():
 	apply_meta_upgrades()
 	update_ui()
-	if has_node("GemCollector/CollisionShape2D"):
-		$GemCollector/CollisionShape2D.shape.radius = pickup_range
 
 func apply_meta_upgrades():
 	max_health += (Global.upgrade_levels["max_health"] * 20)
@@ -56,7 +54,6 @@ func apply_meta_upgrades():
 
 func _physics_process(delta):
 	move_mech()
-	attract_gems(delta)
 	update_minigun_visual()
 	apply_passive_healing(delta)
 
@@ -86,14 +83,6 @@ func update_minigun_visual():
 		if velocity.length() > 0:
 			var target_angle = velocity.angle()
 			$Minigun.rotation = lerp_angle($Minigun.rotation, target_angle, 0.1)
-
-func attract_gems(delta):
-	var gems = get_tree().get_nodes_in_group("gems")
-	for gem in gems:
-		var dist = global_position.distance_to(gem.global_position)
-		if dist < pickup_range:
-			var direction = (global_position - gem.global_position).normalized()
-			gem.global_position += direction * 400.0 * delta
 
 func apply_passive_healing(delta):
 	if health < max_health and healing > 0:
@@ -132,7 +121,6 @@ func shoot():
 		var offset = (i - (bullet_count - 1) / 2.0) * spread_angle
 		bullet.direction = base_dir.rotated(offset).normalized()
 		
-		# Bullet.gd now handles the Mega Shell check using Global.upgrade_levels
 		bullet.pierce_count = run_pierce_lvl
 		bullet.bounce_count = run_bounce_lvl
 		
@@ -189,7 +177,6 @@ func level_up():
 	xp_to_next_level = next_req
 	update_ui()
 	
-	# --- Trigger the Upgrade Menu ---
 	var menu = load("res://LevelUpMenu.tscn").instance()
 	get_tree().current_scene.add_child(menu)
 	get_tree().paused = true
@@ -217,12 +204,17 @@ func _on_DetectionArea_area_entered(area):
 		yield(get_tree().create_timer(0.2), "timeout")
 		$AnimatedSprite.modulate = Color(1, 1, 1)
 		can_take_damage = true
+		
 		if health <= 0:
 			if has_revival:
 				health = max_health / 2
 				has_revival = false 
 				update_ui()
 			else:
-				Global.add_meta_xp(Global.gems_collected)
-				Global.gems_collected = 0 
-				get_tree().change_scene("res://MetaMenu.tscn")
+				# Trigger the transition to the Summary Screen via World script
+				if get_parent().has_method("game_over"):
+					get_parent().game_over()
+				else:
+					# Fallback logic if parent is not World
+					Global.add_meta_xp(Global.gems_collected)
+					get_tree().change_scene("res://SummaryScreen.tscn")
