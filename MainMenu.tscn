@@ -35,6 +35,13 @@ margin_right = 92.0
 margin_bottom = 100.0
 text = "OPTIONS"
 
+[node name="ExitButton" type="Button" parent="VBoxContainer"]
+margin_top = 120.0
+margin_right = 92.0
+margin_bottom = 140.0
+text = "EXIT GAME"
+
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/UpgradesButton" to="." method="_on_UpgradesButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/OptionsButton" to="." method="_on_OptionsButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_ExitButton_pressed"]

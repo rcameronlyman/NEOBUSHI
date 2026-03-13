@@ -4,6 +4,7 @@ extends Node
 var gems_collected = 0
 var total_bullets_hit = 0
 var last_round_win = false # Tracks if the player won or lost the last run
+var run_completed = false # Added to fix the crash when player dies
 var run_ended_early = false # Tracks if the player exited manually via the menu
 
 # --- PERMANENT BANK ---

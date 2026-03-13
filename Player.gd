@@ -1,19 +1,25 @@
 extends KinematicBody2D
 
+# --- MOVEMENT CONSTANTS ---
+var acceleration = 800    
+var friction = 4000         
+var pulse_speed = 0.4       
+var rotation_speed = 0.15   
+
 # --- META PROGRESSION STATS ---
 var max_health = 100
 var health = 100
-var armor = 0            # Flat damage reduction
-var healing = 0            # Passive HP regen (per second)
-var speed = 250            # Move Speed
-var fire_rate = 1.5        # Multiplier for shoot speed
-var damage_mult = 1.0      # Multiplier for bullet damage
-var pickup_range = 150.0   # Area for magnetic gems
-var crit_chance = 0.05     # 5% base chance
-var cooldown_red = 0.0     # % reduction for abilities
-var xp_growth_rate = 1.0   # Multiplier for XP gained
+var armor = 0             
+var healing = 0             
+var speed = 375            # Increased by 50% (was 250) to lengthen the stride
+var fire_rate = 1.5         
+var damage_mult = 1.0      
+var pickup_range = 150.0   
+var crit_chance = 0.05     
+var cooldown_red = 0.0     
+var xp_growth_rate = 1.0   
 
-# --- IN-RUN UPGRADE LEVELS (0-3) ---
+# --- IN-RUN UPGRADE LEVELS ---
 var run_fire_rate_lvl = 0
 var run_pierce_lvl = 0
 var run_bounce_lvl = 0
@@ -22,7 +28,7 @@ var run_exploding_lvl = 1
 var run_mega_shell_lvl = 0
 var run_attract_shell_lvl = 0
 
-# --- UNLOCKABLE ABILITIES (Booleans) ---
+# --- UNLOCKABLE ABILITIES ---
 var has_dash = false
 var has_revival = false
 var has_reroll = false
@@ -34,8 +40,8 @@ var can_take_damage = true
 var bullet_scene = preload("res://Bullet.tscn")
 
 # --- XP & LEVELING ---
-var experience = 0.0        
-var level = 0
+var experience = 0.0         
+var level = 1                
 var xp_to_next_level = 2
 var prev_xp_req = 1
 
@@ -46,24 +52,45 @@ func _ready():
 func apply_meta_upgrades():
 	max_health += (Global.upgrade_levels["max_health"] * 20)
 	health = max_health
-	speed += (Global.upgrade_levels["move_speed"] * 25)
+	# We also scale the move_speed upgrade by 1.5 to keep step length consistent across levels
+	speed += (Global.upgrade_levels["move_speed"] * 37.5) 
 	armor += Global.upgrade_levels["armor"]
 	fire_rate += (Global.upgrade_levels["fire_rate"] * 0.1)
 	damage_mult += (Global.upgrade_levels["damage"] * 0.1)
 	pickup_range += (Global.upgrade_levels["pickup_range"] * 20)
 
 func _physics_process(delta):
-	move_mech()
+	move_mech(delta)
 	update_minigun_visual()
 	apply_passive_healing(delta)
+	# --- CRUSH LOGIC ---
+	# Checks if we are overlapping crates or unarmored enemies to "crush" them
+	for area in $GemCollector.get_overlapping_areas():
+		if area.is_in_group("crate") or area.is_in_group("unarmored"):
+			if area.has_method("take_damage"):
+				area.take_damage(100) # Instant destruction on contact
 
-func move_mech():
+func move_mech(delta):
 	var input = Vector2.ZERO
 	input.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 	input.y = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
-	velocity = input.normalized() * speed
-	velocity = move_and_slide(velocity)
-	if input.length() > 0:
+	input = input.normalized()
+	
+	if input != Vector2.ZERO:
+		var target_speed = speed
+		
+		if $AnimatedSprite.frame == 0 or $AnimatedSprite.frame == 1:
+			target_speed = speed * pulse_speed
+		
+		velocity = velocity.move_toward(input * target_speed, acceleration * delta)
+		
+		# --- DYNAMIC STEP CALCULATION ---
+		var steps_per_second = 2 + Global.upgrade_levels["move_speed"]
+		var total_fps = steps_per_second * 3
+		
+		# MULTIPLY BY 0.66: Slows animation relative to speed to lengthen stride by 50%
+		$AnimatedSprite.speed_scale = (total_fps / 5.0) * 0.66
+		
 		$AnimatedSprite.play()
 		if input.x != 0:
 			$AnimatedSprite.animation = "walk_side"
@@ -73,16 +100,22 @@ func move_mech():
 		else:
 			$AnimatedSprite.animation = "walk_down"
 	else:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 		$AnimatedSprite.stop()
+		$AnimatedSprite.frame = 0 
+		$AnimatedSprite.speed_scale = 1.0 
+		
+	velocity = move_and_slide(velocity)
 
 func update_minigun_visual():
 	var target = get_closest_enemy()
 	if target:
-		$Minigun.look_at(target.global_position)
+		var target_angle = (target.global_position - global_position).angle()
+		$Minigun.rotation = lerp_angle($Minigun.rotation, target_angle, rotation_speed)
 	else:
 		if velocity.length() > 0:
-			var target_angle = velocity.angle()
-			$Minigun.rotation = lerp_angle($Minigun.rotation, target_angle, 0.1)
+			var move_angle = velocity.angle()
+			$Minigun.rotation = lerp_angle($Minigun.rotation, move_angle, rotation_speed * 0.5)
 
 func apply_passive_healing(delta):
 	if health < max_health and healing > 0:
@@ -140,11 +173,25 @@ func get_closest_enemy():
 	var enemies = $ShootingRange.get_overlapping_areas()
 	var nearest = null
 	var min_dist = INF
+	
 	for enemy in enemies:
 		if enemy.is_in_group("enemies"):
 			var dist = global_position.distance_to(enemy.global_position)
-			if dist < min_dist:
-				min_dist = dist
+			var effective_dist = dist
+			
+			# --- TARGET PRIORITY LOGIC ---
+			if enemy.is_in_group("crate"):
+				# Determine if we are facing the crate
+				var dir_to_target = (enemy.global_position - global_position).normalized()
+				var facing_dir = Vector2.RIGHT.rotated($Minigun.rotation)
+				var dot = facing_dir.dot(dir_to_target)
+				
+				# If not facing (dot < 0.7) and not point-blank (dist > 120), deprioritize
+				if dot < 0.7 and dist > 120:
+					effective_dist += 4000 
+			
+			if effective_dist < min_dist:
+				min_dist = effective_dist
 				nearest = enemy
 	return nearest
 
@@ -163,6 +210,11 @@ func _on_GemCollector_area_entered(area):
 		Global.gems_collected += 1
 		check_level_up()
 		area.queue_free()
+	
+	# Extra safeguard: if a crate isn't caught by the physics loop, catch it here
+	if area.is_in_group("crate"):
+		if area.has_method("take_damage"):
+			area.take_damage(100)
 
 func check_level_up():
 	update_ui()
@@ -196,6 +248,10 @@ func update_ui():
 
 func _on_DetectionArea_area_entered(area):
 	if area.is_in_group("enemies") and can_take_damage:
+		# Crates don't damage the player
+		if area.is_in_group("crate"):
+			return
+			
 		var damage_taken = max(1, 10 - armor) 
 		health -= damage_taken
 		update_ui()
@@ -211,10 +267,8 @@ func _on_DetectionArea_area_entered(area):
 				has_revival = false 
 				update_ui()
 			else:
-				# Trigger the transition to the Summary Screen via World script
 				if get_parent().has_method("game_over"):
 					get_parent().game_over()
 				else:
-					# Fallback logic if parent is not World
 					Global.add_meta_xp(Global.gems_collected)
 					get_tree().change_scene("res://SummaryScreen.tscn")

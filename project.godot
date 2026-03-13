@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Resource",
+"class": "MechMovementData",
+"language": "GDScript",
+"path": "res://MechMovementData.gd"
+} ]
+_global_script_class_icons={
+"MechMovementData": ""
+}
+
 [application]
 
 config/name="Neo-Bushi"
