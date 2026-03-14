@@ -22,7 +22,7 @@ animations = [ {
 } ]
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 9, 12.125 )
+extents = Vector2( 45, 58 )
 
 [node name="SupplyCrate" type="Area2D"]
 z_index = -1
@@ -31,11 +31,9 @@ script = ExtResource( 2 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 scale = Vector2( 0.3, 0.3 )
 frames = SubResource( 1 )
-frame = 1
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, 0.125 )
 shape = SubResource( 4 )
 
 [connection signal="area_entered" from="." to="." method="_on_SupplyCrate_area_entered"]

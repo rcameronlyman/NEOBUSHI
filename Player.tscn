@@ -115,7 +115,7 @@ extents = Vector2( 18.5, 27 )
 radius = 78.1025
 
 [sub_resource type="CircleShape2D" id=3]
-radius = 271.007
+radius = 856.309
 
 [sub_resource type="CircleShape2D" id=26]
 
@@ -147,7 +147,6 @@ autostart = true
 [node name="ShootingRange" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShootingRange"]
-visible = false
 shape = SubResource( 3 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
