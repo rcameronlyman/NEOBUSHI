@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://World.gd" type="Script" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://CratePlacer.gd" type="Script" id=6]
 [ext_resource path="res://Sounds/MAIN.mp3" type="AudioStream" id=7]
 [ext_resource path="res://FLOORTEST.png" type="Texture" id=8]
+[ext_resource path="res://ObjectiveManager.gd" type="Script" id=9]
 
 [sub_resource type="CanvasItemMaterial" id=7]
 
@@ -22,6 +23,109 @@ extents = Vector2( 50, 5000 )
 
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 50, 5000 )
+
+[sub_resource type="Animation" id=8]
+resource_name = "ObjectiveDrop"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.5, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 363, -100 ), Vector2( 363, 32 ), Vector2( 363, 65 ), Vector2( 363, 85 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.4, 5, 6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 0, 0, 1 ), Color( 1, 0, 0, 1 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath(".:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath(".:rect_scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1.25, 1.25 ) ]
+}
+
+[sub_resource type="Animation" id=9]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 492, -100 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath(".:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath(".:rect_scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1.25, 1.25 ) ]
+}
 
 [sub_resource type="StyleBoxFlat" id=5]
 bg_color = Color( 0.160784, 0.105882, 0.784314, 1 )
@@ -73,8 +177,9 @@ one_shot = true
 autostart = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource( 9 )
 
-[node name="Label" type="Label" parent="CanvasLayer"]
+[node name="RoundTimer" type="Label" parent="CanvasLayer"]
 margin_left = 498.0
 margin_top = 20.0
 margin_right = 538.0
@@ -82,6 +187,28 @@ margin_bottom = 51.0
 text = "60
 "
 align = 1
+
+[node name="ObjectiveLabel" type="Label" parent="CanvasLayer"]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -20.0
+margin_top = -100.0
+margin_right = 278.0
+margin_bottom = -86.0
+rect_scale = Vector2( 1.25, 1.25 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = 1
+custom_constants/shadow_offset_y = 1
+text = "NEW OBJECTIVE: THIN OUT THE ENEMY FORCES"
+align = 1
+valign = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/ObjectiveLabel"]
+autoplay = "ObjectiveDrop"
+anims/ObjectiveDrop = SubResource( 8 )
+anims/RESET = SubResource( 9 )
 
 [node name="VictoryUI" type="CanvasLayer" parent="CanvasLayer"]
 pause_mode = 2
@@ -135,10 +262,12 @@ custom_styles/fg = SubResource( 5 )
 max_value = 10.0
 
 [node name="LevelLabel" type="Label" parent="XpHud"]
-margin_left = 168.8
-margin_top = 4.0
-margin_right = 201.8
-margin_bottom = 18.0
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -512.0
+margin_right = -309.0
+margin_bottom = 14.0
+align = 2
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -164,6 +293,7 @@ margin_bottom = 105.0
 text = "Speed 1x"
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
 stream = ExtResource( 7 )
 autoplay = true
 

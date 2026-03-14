@@ -25,8 +25,8 @@ func _input(event):
 
 func _process(delta):
 	# Update the countdown label
-	if has_node("CanvasLayer/Label"):
-		$CanvasLayer/Label.text = format_time($Timer.time_left)
+	if has_node("CanvasLayer/RoundTimer"):
+		$CanvasLayer/RoundTimer.text = format_time($Timer.time_left)
 	
 	# Handle auto-hiding the mouse
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:

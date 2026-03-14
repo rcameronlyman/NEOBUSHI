@@ -11,10 +11,10 @@ var safety_margin = 1100
 var base_spawn_time = 2.0          # Slightly slower start
 var minimum_spawn_time = 0.5       # Reasonable cap for high intensity
 var difficulty_increase_rate = 0.02 # Much smoother ramp up (was 0.08)
-var enemies_per_burst = 2          # Dropped from 3 to 2 for better pacing
+var enemies_per_burst = 3          # Dropped from 3 to 2 for better pacing
 
 # NEW: High-intensity testing ceiling
-var max_enemies = 50
+var max_enemies = 200
 
 func _ready():
 	$SpawnTimer.wait_time = base_spawn_time
