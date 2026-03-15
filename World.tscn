@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://World.gd" type="Script" id=2]
@@ -6,9 +6,10 @@
 [ext_resource path="res://EnemySpawner.gd" type="Script" id=4]
 [ext_resource path="res://PauseMenu.tscn" type="PackedScene" id=5]
 [ext_resource path="res://CratePlacer.gd" type="Script" id=6]
-[ext_resource path="res://Sounds/MAIN.mp3" type="AudioStream" id=7]
+[ext_resource path="res://MusicPlayer.gd" type="Script" id=7]
 [ext_resource path="res://FLOORTEST.png" type="Texture" id=8]
 [ext_resource path="res://ObjectiveManager.gd" type="Script" id=9]
+[ext_resource path="res://Wall.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CanvasItemMaterial" id=7]
 
@@ -171,11 +172,6 @@ position = Vector2( 5000, 0 )
 position = Vector2( 29, 48 )
 shape = SubResource( 4 )
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 900.0
-one_shot = true
-autostart = true
-
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 script = ExtResource( 9 )
 
@@ -242,13 +238,6 @@ margin_right = 60.0
 margin_bottom = 60.0
 text = "NEXT LEVEL"
 
-[node name="EnemySpawner" type="Node2D" parent="."]
-script = ExtResource( 4 )
-
-[node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
-wait_time = 2.0
-autostart = true
-
 [node name="XpHud" type="CanvasLayer" parent="."]
 scale = Vector2( 5, 5 )
 transform = Transform2D( 5, 0, 0, 5, 0, 0 )
@@ -294,14 +283,31 @@ text = "Speed 1x"
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 pause_mode = 2
-stream = ExtResource( 7 )
-autoplay = true
+script = ExtResource( 7 )
 
-[node name="CratePlacer" type="Node2D" parent="."]
+[node name="Systems" type="Node2D" parent="."]
+
+[node name="CratePlacer" type="Node2D" parent="Systems"]
 script = ExtResource( 6 )
 total_crates = 25
 
-[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[node name="EnemySpawner" type="Node2D" parent="Systems"]
+script = ExtResource( 4 )
+
+[node name="SpawnTimer" type="Timer" parent="Systems/EnemySpawner"]
+wait_time = 2.0
+autostart = true
+
+[node name="Timer" type="Timer" parent="Systems"]
+wait_time = 900.0
+one_shot = true
+autostart = true
+
+[node name="Wall3" parent="." instance=ExtResource( 10 )]
+position = Vector2( 702, 220 )
+scale = Vector2( 4, 4 )
+
 [connection signal="pressed" from="CanvasLayer/VictoryUI/VictoryOverlay/NextLevelButton" to="." method="_on_NextLevelButton_pressed"]
-[connection signal="timeout" from="EnemySpawner/SpawnTimer" to="EnemySpawner" method="_on_SpawnTimer_timeout"]
 [connection signal="pressed" from="UI/TimeScaleButton" to="." method="_on_TimeScaleButton_pressed"]
+[connection signal="timeout" from="Systems/EnemySpawner/SpawnTimer" to="Systems/EnemySpawner" method="_on_SpawnTimer_timeout"]
+[connection signal="timeout" from="Systems/Timer" to="." method="_on_Timer_timeout"]

@@ -6,6 +6,9 @@ var gem_scene = preload("res://Gem.tscn")
 var death_effect_scene = preload("res://DeathEffect.gd") 
 var knockback = Vector2.ZERO
 
+# New variable to track if the enemy is within the player FOV
+var is_active = false
+
 # New variable to remember the random color
 var enemy_color = Color(1, 1, 1)
 
@@ -37,6 +40,10 @@ func _process(delta):
 		global_position += (direction * speed + knockback) * delta
 
 func take_damage(amount, source_pos):
+	# If the enemy is off-screen (inactive), they ignore damage
+	if not is_active:
+		return
+		
 	health -= amount
 	
 	# Reduced Pushback: Calculate the direction away from the bullet
@@ -65,9 +72,13 @@ func die():
 	
 	# Restored XP Logic: 90% chance for Gem, 0% for health
 	var roll = randf()
-	if roll < 0.90:
+	if roll < 0.60:
 		var gem = gem_scene.instance()
 		get_tree().current_scene.add_child(gem)
 		gem.global_position = global_position
 	
 	queue_free()
+
+func _on_VisibilityNotifier2D_screen_entered():
+	# Wake up the enemy and make them vulnerable
+	is_active = true

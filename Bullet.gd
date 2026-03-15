@@ -42,6 +42,15 @@ func _process(delta):
 		queue_free()
 
 func _on_Bullet_area_entered(area):
+	# --- NEW WALL DETECTION ---
+	if area.is_in_group("walls"):
+		if area.has_method("take_damage"):
+			area.take_damage(damage)
+		
+		# We treat hitting a wall as a final impact
+		handle_final_impact()
+		return
+
 	if area.is_in_group("enemies"):
 		if area.has_method("take_damage"):
 			area.take_damage(damage, global_position)
@@ -61,21 +70,26 @@ func _on_Bullet_area_entered(area):
 			direction = -direction.rotated(rand_range(-0.5, 0.5))
 			return 
 			
-		# 4. FINAL IMPACT LOGIC (The bullet is dying now)
-		var triggered_mega = false
-		
-		# Check Mega Shell first (Guaranteed)
-		if is_mega_shell_unlocked and Global.total_bullets_hit >= mega_shell_threshold:
-			trigger_explosion(1.0) # Full scale
-			Global.total_bullets_hit = 0
-			triggered_mega = true
-		
-		# Check Explosive Rounds (Random chance, only if Mega didn't fire)
-		if not triggered_mega and explosion_chance > 0:
-			if randf() < explosion_chance:
-				trigger_explosion(0.5) # Half scale "mini-blast"
-		
-		queue_free()
+		# 4. FINAL IMPACT LOGIC
+		handle_final_impact()
+
+# I moved the impact logic to its own function to keep the code clean 
+# and avoid repeating it for both enemies and walls.
+func handle_final_impact():
+	var triggered_mega = false
+	
+	# Check Mega Shell first (Guaranteed)
+	if is_mega_shell_unlocked and Global.total_bullets_hit >= mega_shell_threshold:
+		trigger_explosion(1.0) # Full scale
+		Global.total_bullets_hit = 0
+		triggered_mega = true
+	
+	# Check Explosive Rounds (Random chance, only if Mega didn't fire)
+	if not triggered_mega and explosion_chance > 0:
+		if randf() < explosion_chance:
+			trigger_explosion(0.5) # Half scale "mini-blast"
+	
+	queue_free()
 
 func trigger_explosion(blast_scale):
 	var expo = explosion_scene.instance()

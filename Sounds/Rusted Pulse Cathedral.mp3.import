@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Rusted Pulse Cathedral.mp3-ff84a2429d95423289a25fc60edb935d.mp3str"
+
+[deps]
+
+source_file="res://Sounds/Rusted Pulse Cathedral.mp3"
+dest_files=[ "res://.import/Rusted Pulse Cathedral.mp3-ff84a2429d95423289a25fc60edb935d.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

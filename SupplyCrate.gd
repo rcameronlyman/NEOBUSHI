@@ -3,6 +3,9 @@ extends Area2D
 var health_drop_scene = preload("res://HealthDrop.tscn")
 var power_up_scene = preload("res://PowerUp.tscn")
 
+# New: Track if the crate is within the player FOV
+var is_active = false
+
 func _ready():
 	# Keep your group logic
 	add_to_group("enemies")
@@ -10,6 +13,10 @@ func _ready():
 	z_index = 0
 
 func take_damage(_amount = 1, _pos = Vector2.ZERO):
+	# If the crate is off-screen (inactive), it ignores damage
+	if not is_active:
+		return
+		
 	handle_destruction()
 
 func handle_destruction():
@@ -35,3 +42,8 @@ func determine_loot():
 		
 		get_tree().current_scene.call_deferred("add_child", p_up)
 		p_up.global_position = global_position
+
+
+func _on_VisibilityNotifier2D_screen_entered():
+	# Enable damage once the Neo Bushi's sensors detect the crate on screen
+	is_active = true

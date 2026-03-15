@@ -18,6 +18,7 @@ func set_visuals():
 		Type.OVERDRIVE:
 			$Sprite.modulate = Color.red
 		Type.SPEED:
+			# Visual fix: Set it to Cyan so you can see it on the ground
 			$Sprite.modulate = Color.cyan
 
 func apply_powerup(player):
@@ -29,7 +30,9 @@ func apply_powerup(player):
 		Type.OVERDRIVE:
 			player.activate_overdrive(5.0)
 		Type.SPEED:
+			# Both effects trigger at the same time here
 			player.activate_speed_boost(5.0)
+			player.activate_invincibility(5.0)
 	
 	# Item is removed ONLY after the effect is applied
 	queue_free()

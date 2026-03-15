@@ -8,6 +8,10 @@ var mouse_hide_timer = 0.0
 var mouse_hide_delay = 3.0 
 
 func _ready():
+	# RESET TIME SCALE: Ensures run starts at 1x regardless of previous run settings
+	Engine.time_scale = 1.0
+	current_speed_index = 0
+	
 	# Start hidden
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
@@ -25,8 +29,9 @@ func _input(event):
 
 func _process(delta):
 	# Update the countdown label
+	# PATH UPDATED: Now looking inside Systems/Timer
 	if has_node("CanvasLayer/RoundTimer"):
-		$CanvasLayer/RoundTimer.text = format_time($Timer.time_left)
+		$CanvasLayer/RoundTimer.text = format_time($Systems/Timer.time_left)
 	
 	# Handle auto-hiding the mouse
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:

@@ -109,17 +109,18 @@ animations = [ {
 } ]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 18.5, 27 )
+extents = Vector2( 18.5, 52 )
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 78.1025
 
 [sub_resource type="CircleShape2D" id=3]
-radius = 856.309
+radius = 426.011
 
 [sub_resource type="CircleShape2D" id=26]
 
 [node name="Player" type="KinematicBody2D"]
+collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
@@ -128,7 +129,7 @@ frames = SubResource( 7 )
 animation = "walk_up_side"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0.5, 3 )
+position = Vector2( 0.5, 28 )
 shape = SubResource( 1 )
 
 [node name="DetectionArea" type="Area2D" parent="."]

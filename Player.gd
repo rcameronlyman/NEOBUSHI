@@ -17,7 +17,7 @@ var damage_mult = 1.0
 var pickup_range = 150.0   
 var crit_chance = 0.05     
 var cooldown_red = 0.0     
-var xp_growth_rate = 1.0   
+var xp_growth_rate = .5   
 
 # --- POWER-UP TEMPORARY STATS ---
 var boost_speed = 0.0
@@ -292,3 +292,13 @@ func _on_DetectionArea_area_entered(area):
 				else:
 					Global.add_meta_xp(Global.gems_collected)
 					get_tree().change_scene("res://SummaryScreen.tscn")
+
+func activate_invincibility(duration):
+	can_take_damage = false
+	# Optional: Make the player see-through to show they are invincible
+	modulate.a = 0.5 
+	
+	yield(get_tree().create_timer(duration), "timeout")
+	
+	can_take_damage = true
+	modulate.a = 1.0 # Back to normal transparency
