@@ -1,9 +1,10 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://PlayerAnimatedAll-Photoroom.png" type="Texture" id=1]
 [ext_resource path="res://Player.gd" type="Script" id=2]
 [ext_resource path="res://GUN-Photoroom.png" type="Texture" id=3]
 [ext_resource path="res://Muzzle.png" type="Texture" id=4]
+[ext_resource path="res://Sounds/SFX/laserShoot2.wav" type="AudioStream" id=5]
 
 [sub_resource type="AtlasTexture" id=8]
 flags = 4
@@ -109,7 +110,7 @@ animations = [ {
 } ]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 18.5, 52 )
+extents = Vector2( 18.5, 15 )
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 78.1025
@@ -124,12 +125,13 @@ collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+position = Vector2( 3, -77.6 )
 scale = Vector2( 0.8, 0.8 )
 frames = SubResource( 7 )
 animation = "walk_up_side"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0.5, 28 )
+position = Vector2( 3.5, -12.6 )
 shape = SubResource( 1 )
 
 [node name="DetectionArea" type="Area2D" parent="."]
@@ -146,22 +148,26 @@ wait_time = 0.1
 autostart = true
 
 [node name="ShootingRange" type="Area2D" parent="."]
+position = Vector2( 3, -77.6 )
+collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShootingRange"]
 shape = SubResource( 3 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 3, -77.6 )
 current = true
 zoom = Vector2( 2, 2 )
 
 [node name="GemCollector" type="Area2D" parent="."]
+position = Vector2( 3, -77.6 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GemCollector"]
 shape = SubResource( 26 )
 
 [node name="Minigun" type="Sprite" parent="."]
 modulate = Color( 0.207843, 0.219608, 0.168627, 1 )
-position = Vector2( 0, -69 )
+position = Vector2( 3, -146.6 )
 scale = Vector2( 0.08, 0.08 )
 texture = ExtResource( 3 )
 offset = Vector2( 500, 0 )
@@ -173,6 +179,10 @@ position = Vector2( 1000, 0 )
 rotation = -2.30558
 scale = Vector2( 4, 4 )
 texture = ExtResource( 4 )
+
+[node name="ShootSFX" type="AudioStreamPlayer2D" parent="Minigun"]
+stream = ExtResource( 5 )
+volume_db = -3.466
 
 [connection signal="area_entered" from="DetectionArea" to="." method="_on_DetectionArea_area_entered"]
 [connection signal="timeout" from="ShootTimer" to="." method="_on_ShootTimer_timeout"]

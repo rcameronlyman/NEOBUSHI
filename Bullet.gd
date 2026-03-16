@@ -41,13 +41,20 @@ func _process(delta):
 	if global_position.length() > 5000:
 		queue_free()
 
+# This handles hitting StaticBody2D (like Walls)
+func _on_Bullet_body_entered(body):
+	if body.is_in_group("walls"):
+		if body.has_method("take_damage"):
+			body.take_damage(damage)
+		
+		handle_final_impact()
+
+# This handles hitting Area2D (like typical Enemies)
 func _on_Bullet_area_entered(area):
-	# --- NEW WALL DETECTION ---
+	# (Keeping wall check here too just in case you use Area-walls later)
 	if area.is_in_group("walls"):
 		if area.has_method("take_damage"):
 			area.take_damage(damage)
-		
-		# We treat hitting a wall as a final impact
 		handle_final_impact()
 		return
 
@@ -55,39 +62,31 @@ func _on_Bullet_area_entered(area):
 		if area.has_method("take_damage"):
 			area.take_damage(damage, global_position)
 		
-		# 1. Increment Mega Shell counter on every hit, even if it pierces
 		if is_mega_shell_unlocked:
 			Global.total_bullets_hit += 1
 		
-		# 2. Handle Piercing (Exits function, bullet stays alive)
 		if pierce_count > 0:
 			pierce_count -= 1
 			return 
 		
-		# 3. Handle Bouncing (Exits function, bullet stays alive)
 		if bounce_count > 0:
 			bounce_count -= 1
 			direction = -direction.rotated(rand_range(-0.5, 0.5))
 			return 
 			
-		# 4. FINAL IMPACT LOGIC
 		handle_final_impact()
 
-# I moved the impact logic to its own function to keep the code clean 
-# and avoid repeating it for both enemies and walls.
 func handle_final_impact():
 	var triggered_mega = false
 	
-	# Check Mega Shell first (Guaranteed)
 	if is_mega_shell_unlocked and Global.total_bullets_hit >= mega_shell_threshold:
-		trigger_explosion(1.0) # Full scale
+		trigger_explosion(1.0)
 		Global.total_bullets_hit = 0
 		triggered_mega = true
 	
-	# Check Explosive Rounds (Random chance, only if Mega didn't fire)
 	if not triggered_mega and explosion_chance > 0:
 		if randf() < explosion_chance:
-			trigger_explosion(0.5) # Half scale "mini-blast"
+			trigger_explosion(0.5)
 	
 	queue_free()
 

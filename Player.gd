@@ -9,12 +9,12 @@ var rotation_speed = 0.15
 # --- META PROGRESSION STATS ---
 var max_health = 100
 var health = 100
-var armor = 0                
-var healing = 0                
+var armor = 0                 
+var healing = 0                 
 var speed = 375            
 var fire_rate = 1.5         
 var damage_mult = 1.0      
-var pickup_range = 150.0   
+var pickup_range = 250.0   
 var crit_chance = 0.05     
 var cooldown_red = 0.0     
 var xp_growth_rate = .5   
@@ -43,6 +43,9 @@ var has_piercing = false
 var velocity = Vector2.ZERO
 var can_take_damage = true
 var bullet_scene = preload("res://Bullet.tscn")
+
+# --- AUDIO NODES ---
+onready var shoot_sfx = $Minigun/ShootSFX
 
 # --- XP & LEVELING ---
 var experience = 0.0          
@@ -111,30 +114,22 @@ func move_mech(delta):
 
 func activate_speed_boost(duration):
 	boost_speed = 200.0
-	
-	# Start the "Stutter" effect
 	var effect_timer = 0.0
 	while effect_timer < duration:
-		# Toggle transparency for that "ghosting" look
 		$AnimatedSprite.modulate.a = 0.3
 		yield(get_tree().create_timer(0.05), "timeout")
 		$AnimatedSprite.modulate.a = 1.0
 		yield(get_tree().create_timer(0.05), "timeout")
 		effect_timer += 0.1
-	
-	# Reset after duration
 	boost_speed = 0.0
 	$AnimatedSprite.modulate.a = 1.0
 
 func activate_overdrive(duration):
 	boost_fire_rate = 4.0
-	# Intense white-hot glow (RGB values above 1.0)
 	$AnimatedSprite.modulate = Color(4, 4, 2) 
-	
 	yield(get_tree().create_timer(duration), "timeout")
-	
 	boost_fire_rate = 1.0
-	$AnimatedSprite.modulate = Color(1, 1, 1) # Reset to normal
+	$AnimatedSprite.modulate = Color(1, 1, 1)
 
 func activate_magnet(duration):
 	magnet_active = true
@@ -150,18 +145,12 @@ func heal(amount):
 		health = max_health
 	update_ui()
 
-# --- REVISED XP & POWERUP COLLECTION ---
-
 func _on_GemCollector_area_entered(area):
-	# Analytical Fix: Added 'powerups' group check
 	if area.is_in_group("gems") or area.is_in_group("powerups"):
-		# 1. Check if it's a Power-up or special item first
 		if area.has_method("apply_powerup"):
 			area.apply_powerup(self)
-			return # Exit to avoid XP logic below
-
-		# 2. Treat as XP Gem
-		var dist = global_position.distance_to(area.global_position)
+			return 
+		var dist = $AnimatedSprite.global_position.distance_to(area.global_position)
 		if dist < 80: 
 			experience += 1.0 * xp_growth_rate
 			Global.gems_collected += 1
@@ -172,12 +161,10 @@ func _on_GemCollector_area_entered(area):
 		if area.has_method("take_damage"):
 			area.take_damage(100)
 
-# --- EXISTING LOGIC (Unchanged) ---
-
 func update_minigun_visual():
 	var target = get_closest_enemy()
 	if target:
-		var target_angle = (target.global_position - global_position).angle()
+		var target_angle = (target.global_position - $AnimatedSprite.global_position).angle()
 		$Minigun.rotation = lerp_angle($Minigun.rotation, target_angle, rotation_speed)
 	else:
 		if velocity.length() > 0:
@@ -192,7 +179,11 @@ func apply_passive_healing(delta):
 
 func shoot():
 	var target = get_closest_enemy()
-	if not target: return
+	if not target: 
+		return 
+
+	shoot_sfx.pitch_scale = rand_range(0.92, 1.08)
+	shoot_sfx.play()
 
 	var bullet_count = 1
 	var spread_angle = 0.18
@@ -220,17 +211,19 @@ func flash_muzzle():
 
 func get_closest_enemy():
 	var enemies = $ShootingRange.get_overlapping_areas()
+	enemies += $ShootingRange.get_overlapping_bodies() # Combined detection
+	
 	var nearest = null
 	var min_dist = INF
 	for enemy in enemies:
 		if enemy.is_in_group("enemies"):
-			var dist = global_position.distance_to(enemy.global_position)
+			var dist = $AnimatedSprite.global_position.distance_to(enemy.global_position)
 			var effective_dist = dist
 			if enemy.is_in_group("crate"):
-				var dir_to_target = (enemy.global_position - global_position).normalized()
+				var dir_to_target = (enemy.global_position - $AnimatedSprite.global_position).normalized()
 				var facing_dir = Vector2.RIGHT.rotated($Minigun.rotation)
-				var dot = facing_dir.dot(dir_to_target)
-				if dot < 0.7 and dist > 120: effective_dist += 4000 
+				var dog_dot = facing_dir.dot(dir_to_target)
+				if dog_dot < 0.7 and dist > 120: effective_dist += 4000 
 			if effective_dist < min_dist:
 				min_dist = effective_dist
 				nearest = enemy
@@ -295,10 +288,7 @@ func _on_DetectionArea_area_entered(area):
 
 func activate_invincibility(duration):
 	can_take_damage = false
-	# Optional: Make the player see-through to show they are invincible
 	modulate.a = 0.5 
-	
 	yield(get_tree().create_timer(duration), "timeout")
-	
 	can_take_damage = true
-	modulate.a = 1.0 # Back to normal transparency
+	modulate.a = 1.0

@@ -35,14 +35,14 @@ func _process(delta):
 	if not target_player:
 		var player = get_tree().current_scene.find_node("Player", true, false)
 		if player:
-			var dist = global_position.distance_to(player.global_position)
+			var dist = global_position.distance_to(player.get_node("AnimatedSprite").global_position)
 			if dist < player.pickup_range:
 				target_player = player
 				is_bouncing = false 
 
 	# 3. Move toward the player if targeted
 	if target_player:
-		var direction = (target_player.global_position - global_position).normalized()
+		var direction = (target_player.get_node("AnimatedSprite").global_position - global_position).normalized()
 		global_position += direction * attract_speed * delta
 
 func _on_Gem_area_entered(area):
