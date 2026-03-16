@@ -2,3 +2,6 @@
 .import/
 export_preset.cfg
 debug.log
+
+# Ignore Suno AI generated music
+Sounds/
